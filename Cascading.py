@@ -64,7 +64,7 @@ def print_differences(data):
 
 
 # This function was copied from last weeks files
-def plot_graph(songname):
+def plot_stats(songname):
     '''
     Plots a graph with the days throughout a year on the x-axis and (dis)like count on the y-axis
     '''
@@ -80,6 +80,6 @@ def plot_graph(songname):
     return None
 
 
-plot_graph('Hello')
+plot_stats('Hello')
 
 

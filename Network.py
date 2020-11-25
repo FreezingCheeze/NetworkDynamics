@@ -16,14 +16,14 @@ def load_json(filename):
 def get_views(songname):
     # corresponding to the given songname, for a year
     views = []
-    for filename in os.listdir("youtube_top100"):
-        for song in load_json("youtube_top100/" + filename):
+    for filename in os.listdir(DIR_YT):
+        for song in load_json(DIR_YT + SLASH + filename):
             if songname in song['snippet']['title']:
                 views.append(int(song['statistics']['viewCount']))
 
     return views
 
-def plot_graph(songname):
+def plot_views(songname):
     views = get_views(songname)
     plt.plot(views)
     plt.xlabel('days')
@@ -31,4 +31,4 @@ def plot_graph(songname):
     plt.title('songname')
     plt.show()
 
-plot_graph('Hello')
+plot_views('Hello')
