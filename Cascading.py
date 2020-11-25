@@ -152,8 +152,13 @@ def plot_all(songs):
         plot_views(song, DIR_YT)
         plot_popularity(song)
 
+print_all_songs()
 
-SONGS = [
+SONGS_538 = [
+    'Fais & Afrojack - Used To Have It All (Official Video)'
+]
+
+SONGS_YT = [
     'Hello'
     , 'Sorry'
     , 'Hotline Bling'
@@ -166,4 +171,4 @@ SONGS = [
     , 'Same Old Love'
          ]
 
-plot_all_differences(SONGS)
+#plot_all_views(SONGS_YT)
