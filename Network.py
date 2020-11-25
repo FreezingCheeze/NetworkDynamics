@@ -28,7 +28,7 @@ def plot_views(songname):
     plt.plot(views)
     plt.xlabel('days')
     plt.ylabel('views')
-    plt.title('songname')
+    plt.title(songname)
     plt.show()
 
 plot_views('Hello')
