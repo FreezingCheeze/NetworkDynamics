@@ -56,13 +56,6 @@ def likes_dislikes(songname):
     return likes, dislikes, differences
 
 
-def differences(likes_dislikes):
-    res = []
-    for entry in zip(likes_dislikes[0], likes_dislikes[1]):
-        res.append(abs(int(entry[0]) - int(entry[1])))
-    return res
-
-
 def print_differences(data):
     for song in data:
         name = song['snippet']['title']
@@ -71,29 +64,22 @@ def print_differences(data):
 
 
 # This function was copied from last weeks files
-def plot_graph(songname, type):
+def plot_graph(songname):
     '''
     Plots a graph with the days throughout a year on the x-axis and (dis)like count on the y-axis
     '''
-
-    types = ['likes', 'dislikes', 'difference']
-    if type not in types:
-        raise ValueError("Invalid type, expected: ", types)
-    else:
-        index = types.index(type)
-
     results = likes_dislikes(songname)
-
-    plt.plot(results[index])
+    types = ['likes', 'dislikes', 'differences']
+    for i in range(len(results)):
+        plt.plot(results[i], label=types[i])
 
     plt.xlabel('days')
-    plt.ylabel(type)
+    plt.legend()
     plt.title(songname)
     plt.show()
     return None
 
 
-plot_graph('Hello', 'likes')
-plot_graph('Hello', 'dislikes')
-plot_graph('Hello', 'difference')
+plot_graph('Hello')
+
 
