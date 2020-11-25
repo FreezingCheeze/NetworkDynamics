@@ -70,15 +70,13 @@ def plot_graph(songname, type):
 
     results = likes_dislikes(songname)
 
-    days = [n for n in range(len(results[0]))]
-
     if type is types[0]:
-        plt.plot(results[0])
-        print(results[0])
+        index = 0
     else:
-        plt.plot(results[1])
-        print(results[1])
+        index = 1
 
+    res = [int(x) for x in results[index]]
+    plt.plot(res)
 
     plt.xlabel('days')
     plt.ylabel(type)
@@ -86,6 +84,8 @@ def plot_graph(songname, type):
 
     return None
 
+print_all_songs()
+print()
 plot_graph('Hello', 'likes')
 plot_graph('Hello', 'dislikes')
 
