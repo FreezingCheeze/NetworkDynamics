@@ -1,7 +1,6 @@
 import json
 import os
 import matplotlib.pyplot as plt
-import numpy as np
 
 def load_json(filename):
     # load json file as dictionary
@@ -60,20 +59,33 @@ def print_differences(data):
 
 
 # This function was copied from last weeks files
-def plot_graph(songname):
+def plot_graph(songname, type):
     '''
     Plots a graph with the days throughout a year on the x-axis and (dis)like count on the y-axis
     '''
+
+    types = ['likes', 'dislikes']
+    if type not in types:
+        raise ValueError("Invalid type, expected: ", types)
+
     results = likes_dislikes(songname)
-    print(results[0])
+
     days = [n for n in range(len(results[0]))]
-    plt.plot(results[0])
+
+    if type is types[0]:
+        plt.plot(results[0])
+        print(results[0])
+    else:
+        plt.plot(results[1])
+        print(results[1])
 
 
     plt.xlabel('days')
-    plt.ylabel('(dis)likes')
+    plt.ylabel(type)
     plt.show()
 
     return None
 
-plot_graph('Hello')
+plot_graph('Hello', 'likes')
+plot_graph('Hello', 'dislikes')
+
