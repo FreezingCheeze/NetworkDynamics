@@ -54,10 +54,13 @@ def print_all_songs():
     print()
 
 
+
 def get_statistics(songname, dir, *args):
     if dir == DIR_SPOT:
         raise ValueError("Don't use the Spotify dataset with this function")
 
+    # Temp will be a list of len(arg)-tuples, where each tuple will contain the values requested in args at that time point in the data set
+    # Examples of args are: likeCount, dislikeCount, viewCount
     temp = []
     for filename in os.listdir(dir):
         for song in load_json(dir + SLASH + filename):
@@ -67,6 +70,7 @@ def get_statistics(songname, dir, *args):
                     res.append(int(song[statistics][arg]))
                 temp.append(res)
 
+    # Result will be a list of len(arg) lists, where each nested list contains all values over time for that arg
     result = []
     for i in range(len(args)):
         res = []
@@ -76,18 +80,23 @@ def get_statistics(songname, dir, *args):
 
     return result
 
-def get_differences(songname, dir):
-    results = get_statistics(songname, dir, likeCount, dislikeCount)
-    differences = []
 
+def get_differences(songname, dir):
+    # Get the lists of likes and dislikes for the given song in the given directory/dataset
+    results = get_statistics(songname, dir, likeCount, dislikeCount)
+
+    # Calculate the differences
+    differences = []
     for i in range(len(results[0])):
         likes = results[0][i]
         dislikes = results[1][i]
         differences.append(abs(likes - dislikes))
 
+    # Append the differences list to the result, creating a list of 3 lists with likes, dislikes and differences respectively
     results.append(differences)
     return results
 
+# Returns a list of popularity values over time for the given song from the spotify dataset
 def get_popularity(songname):
     res = []
     for filename in os.listdir(DIR_SPOT):
@@ -131,14 +140,14 @@ def plot_popularity(songname):
     plt.title(songname)
     plt.show()
 
-def plot_all_differences(songs):
+def plot_all_differences(songs, dir):
     for song in songs:
-        plot_differences(song, DIR_YT)
+        plot_differences(song, dir)
 
 
-def plot_all_views(songs):
+def plot_all_views(songs, dir):
     for song in songs:
-        plot_views(song, DIR_YT)
+        plot_views(song, dir)
 
 
 def plot_all_popularity(songs):
@@ -154,21 +163,24 @@ def plot_all(songs):
 
 print_all_songs()
 
+SONGS_3FM = ['Bastille - Send Them Off!']
+
 SONGS_538 = [
     'Fais & Afrojack - Used To Have It All (Official Video)'
-]
+    , "DIT IS 4U MET 'BITTER TASTE' – The Next Boy/Girl Band"
+    , 'Kensington - Sorry (official audio)'
+            ]
 
+# Youtube songs can also be used for spotify datalist
 SONGS_YT = [
     'Hello'
     , 'Sorry'
     , 'Hotline Bling'
     , 'What Do You Mean?'
     , 'Stitches'
-    , 'On My Mind'
-    , 'Focus'
-    , 'How Deep Is Your Love'
-    , 'The Hills'
-    , 'Same Old Love'
          ]
 
-#plot_all_views(SONGS_YT)
+plot_all_differences(SONGS_3FM, DIR_3FM)
+plot_all_differences(SONGS_538, DIR_538)
+plot_all_differences(SONGS_YT, DIR_YT)
+
