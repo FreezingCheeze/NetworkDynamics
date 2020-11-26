@@ -297,60 +297,10 @@ SONGS_YT = [
     , 'Same Old Love'
          ]
 
-DONT_USE = [
-    'Where Are Ü Now (with Justin Bieber)'
-    , 'Easy Love - Original Mix'
-    , 'Marvin Gaye (feat. Meghan Trainor)'
-    , 'Lay It All On Me (feat. Ed Sheeran)'
-    , 'Downtown (feat. Eric Nally, Melle Mel, Kool Moe Dee & Grandmaster Caz)'
-    , 'Cheerleader - Felix Jaehn Remix Radio Edit'
-    , 'Lean On (feat. MØ & DJ Snake)'
-    , 'Here'
-    , 'Again'
-    , '679 (feat. Remy Boyz)'
-    , "Ain't Nobody (Loves Me Better)"
-    , 'Reality - Radio Edit'
-    , 'See You Again (feat. Charlie Puth)'
-    , 'Sugar'
-    , 'Are You with Me - Radio Edit'
-    , "I Don't Like It, I Love It (feat. Robin Thicke & Verdine White)"
-    , 'Alive'
-    , 'Hey Mama (feat. Nicki Minaj, Bebe Rexha & Afrojack)'
-    , 'I Took A Pill In Ibiza - SeeB Remix'
-    , 'Powerful (feat. Ellie Goulding & Tarrus Riley)'
-    , 'My Way (feat. Monty)'
-    , 'Often'
-    , "That's How You Know (feat. Kid Ink & Bebe Rexha)"
-    , 'Five More Hours - Deorro x Chris Brown'
-    , 'Fight Song'
-    , 'Black Magic'
-    , 'Ghost Town'
-    , "Runnin' (Lose It All)"
-        ]
-
-test = ['Love Me Like You Do']
-
-def spotify_songs():
-    res = []
-    for item in load_json(DIR_SPOT + SLASH + DATA)[tracks][items]:
-        res.append(item[track][name])
-
-    to_remove = []
-    for s1 in DONT_USE: # select the songs from DONT_USE, because they shouldn't be used
-        for s2 in res:
-            if s1 in s2 or s1 == s2:
-                to_remove.append(s2)
-
-    for songname in to_remove: # remove the songs
-        if songname in res:
-            res.remove(songname)
-
-    return res
 
 # endregion
 
 #print_all_songs()
-#print(spotify_songs())
 
 #plot_all_views(SONGS_3FM, DIR_3FM)
 #plot_all_views(SONGS_538, DIR_538)
