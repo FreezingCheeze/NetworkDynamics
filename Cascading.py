@@ -180,7 +180,9 @@ SONGS_YT = [
     , 'Stitches'
          ]
 
-plot_all_differences(SONGS_3FM, DIR_3FM)
-plot_all_differences(SONGS_538, DIR_538)
-plot_all_differences(SONGS_YT, DIR_YT)
+# plot_all_differences(SONGS_3FM, DIR_3FM)
+# plot_all_differences(SONGS_538, DIR_538)
+# plot_all_differences(SONGS_YT, DIR_YT)
+
+plot_all_views(SONGS_YT, DIR_YT)
 
