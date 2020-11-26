@@ -28,7 +28,7 @@ def load_json(filename):
 
 
 def print_all_songs():
-    #overview of all songs from the 4 datasets
+    # overview of all songs from the 4 datasets
     print("Youtube's Top 100 Songs:")
     dummy_file = load_json("youtube_top100/20151109_1800_data.json")
     for song in dummy_file:
@@ -171,4 +171,4 @@ SONGS_YT = [
     , 'Same Old Love'
          ]
 
-#plot_all_views(SONGS_YT)
+plot_all_views(SONGS_YT)
