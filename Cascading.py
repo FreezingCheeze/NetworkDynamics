@@ -151,42 +151,6 @@ def song_rankings(song):
 
     return tuples_to_list(res)
 
-
-# Gets the spotify and youtube rankings and computes the difference in rankings between the 2 for each song
-def compare_rankings(filename):
-    spotify_rankings = rank_spotify(filename)
-    youtube_rankings = rank_youtube(filename)
-    res = dict()
-    for i in range(len(spotify_rankings)): # i is the ranking index in the spotify ranking
-        spotify_entry = spotify_rankings[i]
-        song_name = spotify_entry[0]
-        for j in range(len(youtube_rankings)): # j is the ranking index in the youtube ranking
-            youtube_entry = youtube_rankings[j]
-            if song_name in youtube_entry[0]:
-                res[song_name] = (i, j, abs(i - j)) # i - j is the distance between the 2 rankings
-
-    return res
-
-
-# Computes the average distance between youtube and spotify ranking for the given dataset
-def average_distance(filename):
-    distances = compare_rankings(filename)
-    length = len(distances)
-    total = 0
-    for entry in distances.items():
-        total += entry[1][2]
-
-    return [length, total / length]
-
-
-# Gets the average distance for all datasets
-def distances():
-    temp = []
-    for filename in os.listdir(DIR_SPOT):
-        if filename in os.listdir(DIR_YT) and filename.endswith(".json"):
-            temp.append(average_distance(filename))
-    return tuples_to_list(temp)
-
 #endregion
 
 #region plots
