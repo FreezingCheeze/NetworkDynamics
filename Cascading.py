@@ -30,7 +30,6 @@ viewCount = 'viewCount'
 
 # region Tools
 
-
 def load_json(filename):
     # load json file as dictionary
     with open(filename) as json_file: return json.load(json_file)
@@ -46,6 +45,7 @@ def print_all_songs():
 
     print("Spotify's Top 100 Songs:")
     dummy_file = load_json("spotify_top100/20151109_1800_data.json")
+    print(len(dummy_file['tracks']['items']))
     for song in dummy_file['tracks']['items']:
         print(song['track']['name'])
     print()
@@ -76,7 +76,6 @@ def tuples_to_list(tuples):
 # endregion
 
 # region Stats
-
 
 def get_statistics(songname, dir, *args):
     if dir == DIR_SPOT:
@@ -187,7 +186,21 @@ def song_rankings(song):
     return tuples_to_list(res)
 
 
-# endregion
+# Computes the average distance between youtube and spotify ranking for the given dataset
+def average_distance(rankings):
+    length = len(rankings[0])
+    total = 0
+
+    for i in range(length):
+        spot_rank = rankings[0][i]
+        yt_rank = rankings[1][i]
+        total += abs(spot_rank - yt_rank)
+
+    total = total / length
+    return total
+
+
+#endregion
 
 # region Plots
 
@@ -222,6 +235,7 @@ def plot_views(songname, dir):
 def plot_popularity(songname):
     results = get_popularity(songname)
     plt.plot(results)
+
     plt.xlabel('days')
     plt.ylabel('popularity')
     plt.title(songname)
@@ -230,6 +244,7 @@ def plot_popularity(songname):
 
 def plot_rankings(songname):
     results = song_rankings(songname)
+
     types = ['Spotify Ranking', 'Youtube Ranking']
     for i in range(len(results)):
         plt.plot([100 - x for x in results[i]], label=types[i]) # invert the results to have higher values be better in the plot
@@ -237,11 +252,11 @@ def plot_rankings(songname):
     plt.legend()
     plt.title(songname)
     plt.show()
+    return average_distance(results)
 
-#endregion
+# endregion
 
 # region Plot All
-
 
 def plot_all_differences(songs, dir):
     for song in songs:
@@ -259,9 +274,11 @@ def plot_all_popularity(songs):
 
 
 def plot_all_rankings(songs):
+    total_distance = 0
     for song in songs:
-        plot_rankings(song)
-
+        total_distance += plot_rankings(song)
+    average = total_distance / len(songs)
+    print(average)
 
 def plot_all(songs):
     for song in songs:
@@ -297,14 +314,73 @@ SONGS_YT = [
     , 'Same Old Love'
          ]
 
+DONT_USE = [
+    'Where Are Ü Now (with Justin Bieber)'
+    , 'Easy Love - Original Mix'
+    , 'Marvin Gaye (feat. Meghan Trainor)'
+    , 'Lay It All On Me (feat. Ed Sheeran)'
+    , 'Downtown (feat. Eric Nally, Melle Mel, Kool Moe Dee & Grandmaster Caz)'
+    , 'Cheerleader - Felix Jaehn Remix Radio Edit'
+    , 'Lean On (feat. MØ & DJ Snake)'
+    , 'Here'
+    , 'Again'
+    , '679 (feat. Remy Boyz)'
+    , "Ain't Nobody (Loves Me Better)"
+    , 'Reality - Radio Edit'
+    , 'See You Again (feat. Charlie Puth)'
+    , 'Sugar'
+    , 'Are You with Me - Radio Edit'
+    , "I Don't Like It, I Love It (feat. Robin Thicke & Verdine White)"
+    , 'Alive'
+    , 'Hey Mama (feat. Nicki Minaj, Bebe Rexha & Afrojack)'
+    , 'I Took A Pill In Ibiza - SeeB Remix'
+    , 'Powerful (feat. Ellie Goulding & Tarrus Riley)'
+    , 'My Way (feat. Monty)'
+    , 'Often'
+    , "That's How You Know (feat. Kid Ink & Bebe Rexha)"
+    , 'Five More Hours - Deorro x Chris Brown'
+    , 'Fight Song'
+    , 'Black Magic'
+    , 'Ghost Town'
+    , "Runnin' (Lose It All)"
+    , 'Watch Me (Whip / Nae Nae)'
+    , 'Cool for the Summer'
+    , 'Back To Back'
+    , 'No Role Modelz'
+    , 'Rolling in the Deep'
+    , 'Love Me Like You'
+    , '7 Years'
+    , 'Love Me Like You Do - From "Fifty Shades Of Grey"'
+        ]
+
+
+def spotify_songs():
+    res = []
+    for item in load_json(DIR_SPOT + SLASH + DATA)[tracks][items]:
+        res.append(item[track][name])
+
+    to_remove = []
+    for s1 in DONT_USE: # select the songs from DONT_USE, because they shouldn't be used
+        for s2 in res:
+            if s1 == s2:
+                to_remove.append(s2)
+
+    for songname in to_remove: # remove the songs
+        if songname in res:
+            res.remove(songname)
+
+    return res
 
 # endregion
 
-#print_all_songs()
+print_all_songs()
+#print(len(spotify_songs()), spotify_songs())
+#plot_all_views(spotify_songs(), DIR_YT)
+plot_all_rankings(spotify_songs())
 
 #plot_all_views(SONGS_3FM, DIR_3FM)
 #plot_all_views(SONGS_538, DIR_538)
 #plot_all_views(SONGS_YT, DIR_YT)
 
 #plot_all_popularity(SONGS_YT)
-plot_all_rankings(SONGS_YT)
+#plot_all_rankings(SONGS_YT)
