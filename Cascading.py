@@ -54,6 +54,17 @@ def print_all_songs():
     print()
 
 
+def tuples_to_list(tuples):
+    result = []
+    for i in range(len(tuples[0])):
+        res = []
+        for j in range(len(tuples)):
+            res.append(tuples[j][i])
+        result.append(res)
+
+    return result
+
+#region Stats
 
 def get_statistics(songname, dir, *args):
     if dir == DIR_SPOT:
@@ -70,15 +81,7 @@ def get_statistics(songname, dir, *args):
                     res.append(int(song[statistics][arg]))
                 temp.append(res)
 
-    # Result will be a list of len(arg) lists, where each nested list contains all values over time for that arg
-    result = []
-    for i in range(len(args)):
-        res = []
-        for j in range(len(temp)):
-            res.append(temp[j][i])
-        result.append(res)
-
-    return result
+    return tuples_to_list(temp)
 
 
 def get_differences(songname, dir):
@@ -102,9 +105,91 @@ def get_popularity(songname):
     for filename in os.listdir(DIR_SPOT):
         if filename.endswith('.json'):
             for song in load_json(DIR_SPOT + SLASH + filename)[tracks][items]:
-                if song  and songname in song[track][name]:
+                if songname in song[track][name]:
                     res.append(song[track][popularity])
     return res
+
+
+# Creates a dict from a song to its popularity for the 100 top songs in the given spotify dataset
+def rank_spotify(filename):
+    res = dict()
+    for song in load_json(DIR_SPOT + SLASH + filename)[tracks][items]:
+        songname = song[track][name]
+        index = song[track][popularity]
+        res[songname] = index
+
+    return sorted(res.items(), key=lambda x: x[1])
+
+
+# Creates a dict from a song to its views for the 100 top songs in the given youtube dataset
+def rank_youtube(filename):
+    res = dict()
+    for song in load_json(DIR_YT + SLASH + filename):
+        songname = song[snippet][title]
+        views = song[statistics][viewCount]
+        res[songname] = views
+
+    return sorted(res.items(), key=lambda x: x[1], reverse=True)
+
+
+def song_rankings(song):
+    res = []
+    for filename in os.listdir(DIR_SPOT):
+        if filename in os.listdir(DIR_YT) and filename.endswith(".json"):
+            spotify_rankings = rank_spotify(filename)
+            youtube_rankings = rank_youtube(filename)
+
+            for i in range(len(spotify_rankings)): # Check which entry the song is in spotify
+                entry = spotify_rankings[i]
+                if song in entry[0]:
+
+                    for j in range(len(youtube_rankings)): # check which entry the song is in youtube
+                        entry = youtube_rankings[j]
+                        if song in entry[0]:
+                            res.append((i, j))
+                            break
+
+    return tuples_to_list(res)
+
+
+# Gets the spotify and youtube rankings and computes the difference in rankings between the 2 for each song
+def compare_rankings(filename):
+    spotify_rankings = rank_spotify(filename)
+    youtube_rankings = rank_youtube(filename)
+    res = dict()
+    for i in range(len(spotify_rankings)): # i is the ranking index in the spotify ranking
+        spotify_entry = spotify_rankings[i]
+        song_name = spotify_entry[0]
+        for j in range(len(youtube_rankings)): # j is the ranking index in the youtube ranking
+            youtube_entry = youtube_rankings[j]
+            if song_name in youtube_entry[0]:
+                res[song_name] = (i, j, abs(i - j)) # i - j is the distance between the 2 rankings
+
+    return res
+
+
+# Computes the average distance between youtube and spotify ranking for the given dataset
+def average_distance(filename):
+    distances = compare_rankings(filename)
+    length = len(distances)
+    total = 0
+    for entry in distances.items():
+        total += entry[1][2]
+
+    return [length, total / length]
+
+
+# Gets the average distance for all datasets
+def distances():
+    temp = []
+    for filename in os.listdir(DIR_SPOT):
+        if filename in os.listdir(DIR_YT) and filename.endswith(".json"):
+            temp.append(average_distance(filename))
+    return tuples_to_list(temp)
+
+#endregion
+
+#region plots
 
 # This function was copied from last weeks files
 def plot_differences(songname, dir):
@@ -140,6 +225,21 @@ def plot_popularity(songname):
     plt.title(songname)
     plt.show()
 
+
+def plot_rankings(songname):
+    results = song_rankings(songname)
+    types = ['Spotify Ranking', 'Youtube Ranking']
+    for i in range(len(results)):
+        plt.plot(results[i], label=types[i])
+    plt.xlabel('days')
+    plt.legend()
+    plt.title(songname)
+    plt.show()
+
+#endregion
+
+#region Plot All
+
 def plot_all_differences(songs, dir):
     for song in songs:
         plot_differences(song, dir)
@@ -154,14 +254,18 @@ def plot_all_popularity(songs):
     for song in songs:
         plot_popularity(song)
 
+def plot_all_rankings(songs):
+    for song in songs:
+        plot_rankings(song)
 
 def plot_all(songs):
     for song in songs:
         plot_differences(song, DIR_YT)
         plot_views(song, DIR_YT)
         plot_popularity(song)
+        plot_rankings(song)
 
-print_all_songs()
+#endregion
 
 SONGS_3FM = ['Bastille - Send Them Off!']
 
@@ -174,13 +278,23 @@ SONGS_538 = [
 # Youtube songs can also be used for spotify datalist
 SONGS_YT = [
     'Hello'
-    , 'Sorry'
+    , 'Good For You'
     , 'Hotline Bling'
-    , 'What Do You Mean?'
+    , 'Jumpman'
     , 'Stitches'
+    , 'On My Mind'
+    , '7 Years'
+    , 'How Deep Is Your Love'
+    , 'The Hills'
+    , 'Same Old Love'
          ]
 
-plot_all_differences(SONGS_3FM, DIR_3FM)
-plot_all_differences(SONGS_538, DIR_538)
-plot_all_differences(SONGS_YT, DIR_YT)
+#print_all_songs()
 
+# plot_all_views(SONGS_3FM, DIR_3FM)
+# plot_all_views(SONGS_538, DIR_538)
+# plot_all_views(SONGS_YT, DIR_YT)
+#plot_all_popularity(SONGS_YT)
+
+#plot_all_popularity(SONGS_YT)
+plot_all_rankings(SONGS_YT)
