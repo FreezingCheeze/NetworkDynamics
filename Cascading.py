@@ -22,13 +22,14 @@ likeCount = 'likeCount'
 dislikeCount = 'dislikeCount'
 viewCount = 'viewCount'
 
+
 def load_json(filename):
     # load json file as dictionary
     with open(filename) as json_file: return json.load(json_file)
 
 
 def print_all_songs():
-    #overview of all songs from the 4 datasets
+    # overview of all songs from the 4 datasets
     print("Youtube's Top 100 Songs:")
     dummy_file = load_json("youtube_top100/20151109_1800_data.json")
     for song in dummy_file:
@@ -64,13 +65,15 @@ def tuples_to_list(tuples):
 
     return result
 
-#region Stats
+# region Stats
+
 
 def get_statistics(songname, dir, *args):
     if dir == DIR_SPOT:
         raise ValueError("Don't use the Spotify dataset with this function")
 
-    # Temp will be a list of len(arg)-tuples, where each tuple will contain the values requested in args at that time point in the data set
+    # Temp will be a list of len(arg)-tuples,
+    # where each tuple will contain the values requested in args at that time point in the data set
     # Examples of args are: likeCount, dislikeCount, viewCount
     temp = []
     for filename in os.listdir(dir):
@@ -95,9 +98,11 @@ def get_differences(songname, dir):
         dislikes = results[1][i]
         differences.append(abs(likes - dislikes))
 
-    # Append the differences list to the result, creating a list of 3 lists with likes, dislikes and differences respectively
+    # Append the differences list to the result,
+    # creating a list of 3 lists with likes, dislikes and differences respectively
     results.append(differences)
     return results
+
 
 # Returns a list of popularity values over time for the given song from the spotify dataset
 def get_popularity(songname):
@@ -151,9 +156,10 @@ def song_rankings(song):
 
     return tuples_to_list(res)
 
-#endregion
+# endregion
 
-#region plots
+# region Plots
+
 
 # This function was copied from last weeks files
 def plot_differences(songname, dir):
@@ -172,6 +178,7 @@ def plot_differences(songname, dir):
     plt.show()
     return None
 
+
 def plot_views(songname, dir):
     results = get_statistics(songname, dir, viewCount)
     plt.plot(results[0])
@@ -180,6 +187,7 @@ def plot_views(songname, dir):
     plt.ylabel('views')
     plt.title(songname)
     plt.show()
+
 
 def plot_popularity(songname):
     results = get_popularity(songname)
@@ -202,7 +210,8 @@ def plot_rankings(songname):
 
 #endregion
 
-#region Plot All
+# region Plot All
+
 
 def plot_all_differences(songs, dir):
     for song in songs:
@@ -218,9 +227,11 @@ def plot_all_popularity(songs):
     for song in songs:
         plot_popularity(song)
 
+
 def plot_all_rankings(songs):
     for song in songs:
         plot_rankings(song)
+
 
 def plot_all(songs):
     for song in songs:
@@ -229,7 +240,8 @@ def plot_all(songs):
         plot_popularity(song)
         plot_rankings(song)
 
-#endregion
+
+# endregion
 
 SONGS_3FM = ['Bastille - Send Them Off!']
 
@@ -253,11 +265,12 @@ SONGS_YT = [
     , 'Same Old Love'
          ]
 
+
 #print_all_songs()
 
-# plot_all_views(SONGS_3FM, DIR_3FM)
-# plot_all_views(SONGS_538, DIR_538)
-# plot_all_views(SONGS_YT, DIR_YT)
+#plot_all_views(SONGS_3FM, DIR_3FM)
+#plot_all_views(SONGS_538, DIR_538)
+#plot_all_views(SONGS_YT, DIR_YT)
 #plot_all_popularity(SONGS_YT)
 
 #plot_all_popularity(SONGS_YT)
