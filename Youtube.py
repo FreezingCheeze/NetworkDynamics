@@ -1,13 +1,13 @@
 from googleapiclient.discovery import build
-import random as rand
 import matplotlib.pyplot as plt
+import random as rand
 import ast
 
-api_key_g = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
-api_key_b = 'AIzaSyCiv00E35N5wnqTNcp8CAXmkICSXraG0-w' # Bas' API key
+api_key = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
+bas_key = 'AIzaSyCiv00E35N5wnqTNcp8CAXmkICSXraG0-w'
 video_id = 'Vh_vi8qN4Cs'
 
-service = build('youtube', 'v3', developerKey=api_key_b)
+service = build('youtube', 'v3', developerKey=bas_key)
 
 
 # Takes the video id of the video to get data from, as well as the dictionary to put the stats into
@@ -43,51 +43,61 @@ def generate_data(v_id):
         v_id = video['id']['videoId'] # get its video id
 
         get_video_data(v_id, res)
-        print("Finished i! Res: ", res)
+        print("F", res)
 
     return res
 
-
-#data = generate_data(video_id)
-# for item, value in data.items():
-#     print(item, value)
-
-
-def read_data_from_file():
-    with open("YoutubeData.txt", encoding="utf8") as f:
+def read_data_from_file(filename):
+    with open(filename, encoding="utf8") as f:
         content = f.read()
         dictionary = ast.literal_eval(content)
         f.close()
 
     return dictionary
 
-def plot_data():
-    dictionary = read_data_from_file()
-    views = sorted([int(y) for (x, y) in dictionary.values()], reverse=True)
+def plot_data(filename):
+    data = read_data_from_file(filename)
+    views = sorted([int(y) for (x, y) in data.values()], reverse=True)
 
     plt.plot(views)
+
     plt.xlabel('Number of Videos')
     plt.ylabel('Views')
-    plt.title("Views of Videos")
+    plt.title(filename)
     plt.show()
 
-def plot_normal_distribution():
-    dictionary = read_data_from_file()
+
+def plot_normal_distribution(filename):
+    dictionary = read_data_from_file(filename)
     views = [int(y) for (x, y) in dictionary.values()]
-    mi = min(views)
-    ma = max(views)
-    step = int((ma - mi) / 100)
-    intervals = [x for x in range(mi, ma, step)]
+    min_views = min(views)
+    max_views = max(views)
+    step = int((max_views - min_views) / 100)
+    intervals = [x for x in range(min_views, max_views, step)]
+
     vals = dict()
     for count in views:
         for val in intervals:
-            if count <= val:
+            if val <= count <= val + step:
                 if vals.get(val) is not None:
-                    vals[val] = vals + 1
+                    vals[val] = vals[val] + 1
                 else:
                     vals[val] = 1
 
-    vals = sorted(vals.items)
-    print(vals)
+    for val in intervals:
+        if vals.get(val) is None:
+            vals[val] = 0
 
-plot_data()
+    vals = sorted(vals.items())
+    print(vals)
+    plt.plot([x for (x, y) in vals], [y for (x, y) in vals] )
+
+    plt.xlabel('Views')
+    plt.ylabel('number of videos')
+    plt.title()
+    plt.show()
+
+
+plot_data("Data1.txt")
+plot_data("Data2.txt")
+#plot_data(generate_data(video_id))
