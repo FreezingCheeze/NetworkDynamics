@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 # region Constants
 
 SLASH = "/"
+ENDING = "_1800_data.json"
 DIR_YT = "youtube_top100"
 DIR_SPOT = "spotify_top100"
 DIR_3FM = "radio3fm_megahit"
@@ -82,7 +83,8 @@ def get_statistics(songname, dir, *args):
         raise ValueError("Don't use the Spotify dataset with this function")
 
     # Temp will be a list of len(arg)-tuples,
-    # where each tuple will contain the values requested in args at that time point in the data set
+    # where each tuple will contain the values requested in args of the requested song,
+    # at all time points in the data set
     # Examples of args are: likeCount, dislikeCount, viewCount
     temp = []
     for num, filename in enumerate(os.listdir(dir), start=1):
@@ -101,6 +103,28 @@ def get_statistics(songname, dir, *args):
 
     return tuples_to_list(temp)
 
+def get_daily_statistics(day, dir, *args):
+    if dir != DIR_YT:
+        raise ValueError("Only use youtube dataset with this function")
+
+    # Temp will be a list of len(arg)-tuples,
+    # where each tuple will contain the values requested in args of the requested day,
+    # for all songs in the data set
+    # Examples of args are: likeCount, dislikeCount, viewCount
+    temp = []
+    for num, song in enumerate(load_json(dir + SLASH + day + ENDING), start=1):
+        res = []
+        for arg in args:
+            res.append(int(song[statistics][arg]))
+        temp.append(res)
+
+        if len(temp) != num:
+            res = []
+            for arg in args:
+                res.append(0)
+            temp.append(res)
+
+    return tuples_to_list(temp)
 
 def get_differences(songname, dir):
     # Get the lists of likes and dislikes for the given song in the given directory/dataset
@@ -255,7 +279,33 @@ def plot_rankings(songname):
     return average_distance(results)
 
 def plot_distribution(day):
-    return None
+    views = get_daily_statistics(day, DIR_YT, viewCount)[0]
+    min_views = min(views)
+    max_views = max(views)
+    step = int((max_views - min_views) / 100)
+    intervals = [x for x in range(min_views, max_views, step)]
+
+    vals = dict()
+    for count in views:
+        for val in intervals:
+            if val <= count <= val + step:
+                if vals.get(val) is not None:
+                    vals[val] = vals[val] + 1
+                else:
+                    vals[val] = 1
+
+    for val in intervals:
+        if vals.get(val) is None:
+            vals[val] = 0
+
+    vals = sorted(vals.items())
+    print(vals)
+    plt.plot([x for (x, y) in vals], [y for (x, y) in vals])
+
+    plt.xlabel('Views')
+    plt.ylabel('number of videos')
+    plt.title('View distribution on ' + day)
+    plt.show()
 
 
 # endregion
@@ -384,7 +434,11 @@ def spotify_songs():
 
 #plot_all_views(SONGS_3FM, DIR_3FM)
 #plot_all_views(SONGS_538, DIR_538)
-plot_all_views(SONGS_YT, DIR_YT)
+#lot_all_views(SONGS_YT, DIR_YT)
 
 #plot_all_popularity(SONGS_YT)
 #plot_all_rankings(SONGS_YT)
+
+plot_distribution('20151120')
+plot_distribution('20160327')
+plot_distribution('20160607')

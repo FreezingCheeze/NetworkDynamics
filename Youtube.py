@@ -94,10 +94,11 @@ def plot_normal_distribution(filename):
 
     plt.xlabel('Views')
     plt.ylabel('number of videos')
-    plt.title()
+    plt.title(filename)
     plt.show()
 
 
 plot_data("Data1.txt")
 plot_data("Data2.txt")
+plot_normal_distribution("Data2.txt")
 #plot_data(generate_data(video_id))
