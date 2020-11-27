@@ -47,28 +47,28 @@ def generate_data(v_id):
 
     return res
 
-def read_data_from_file():
-    with open("YoutubeData.txt", encoding="utf8") as f:
+def read_data_from_file(filename):
+    with open(filename, encoding="utf8") as f:
         content = f.read()
         dictionary = ast.literal_eval(content)
         f.close()
 
     return dictionary
 
-def plot_data(data):
-
+def plot_data(filename):
+    data = read_data_from_file(filename)
     views = sorted([int(y) for (x, y) in data.values()], reverse=True)
 
     plt.plot(views)
 
     plt.xlabel('Number of Videos')
     plt.ylabel('Views')
-    plt.title("Views of Videos")
+    plt.title(filename)
     plt.show()
 
 
-def plot_normal_distribution():
-    dictionary = read_data_from_file()
+def plot_normal_distribution(filename):
+    dictionary = read_data_from_file(filename)
     views = [int(y) for (x, y) in dictionary.values()]
     min_views = min(views)
     max_views = max(views)
@@ -94,9 +94,10 @@ def plot_normal_distribution():
 
     plt.xlabel('Views')
     plt.ylabel('number of videos')
-    plt.title("Views of Videos")
+    plt.title()
     plt.show()
 
 
-plot_data(read_data_from_file())
+plot_data("Data1.txt")
+plot_data("Data2.txt")
 #plot_data(generate_data(video_id))
