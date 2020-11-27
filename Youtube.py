@@ -1,5 +1,7 @@
 from googleapiclient.discovery import build
+import matplotlib.pyplot as plt
 import random as rand
+import ast
 
 api_key = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
 video_id = 'Vh_vi8qN4Cs'
@@ -44,7 +46,38 @@ def generate_data(v_id):
 
     return res
 
-data = generate_data(video_id)
-for item, value in data.items():
-    print(item, value)
 
+#data = generate_data(video_id)
+# for item, value in data.items():
+#     print(item, value)
+
+
+def read_data_from_file():
+    with open("YoutubeData.txt", encoding="utf8") as f:
+        content = f.read()
+        dictionary = ast.literal_eval(content)
+        f.close()
+
+    return dictionary
+
+def plot_data():
+    dictionary = read_data_from_file()
+    views = sorted([int(y) for (x, y) in dictionary.values()], reverse=True)
+
+    plt.plot(views)
+
+    plt.xlabel('Number of Videos')
+    plt.ylabel('Views')
+    plt.title("Views of Videos")
+    plt.show()
+
+def plot_normal_distribution():
+    dictionary = read_data_from_file()
+    views = [int(y) for (x, y) in dictionary.values()]
+    min = min(views)
+    max = max(views)
+    intervals = [x for x in range(min, max, (max-min) / 10)]
+    print(intervals)
+
+
+plot_normal_distribution()
