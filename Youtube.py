@@ -66,7 +66,6 @@ def plot_data():
     views = sorted([int(y) for (x, y) in dictionary.values()], reverse=True)
 
     plt.plot(views)
-
     plt.xlabel('Number of Videos')
     plt.ylabel('Views')
     plt.title("Views of Videos")
@@ -75,10 +74,20 @@ def plot_data():
 def plot_normal_distribution():
     dictionary = read_data_from_file()
     views = [int(y) for (x, y) in dictionary.values()]
-    min = min(views)
-    max = max(views)
-    intervals = [x for x in range(min, max, (max-min) / 10)]
-    print(intervals)
+    mi = min(views)
+    ma = max(views)
+    step = int((ma - mi) / 100)
+    intervals = [x for x in range(mi, ma, step)]
+    vals = dict()
+    for count in views:
+        for val in intervals:
+            if count <= val:
+                if vals.get(val) is not None:
+                    vals[val] = vals + 1
+                else:
+                    vals[val] = 1
 
+    vals = sorted(vals.items)
+    print(vals)
 
-plot_normal_distribution()
+plot_data()

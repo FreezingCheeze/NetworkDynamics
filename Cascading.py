@@ -254,6 +254,10 @@ def plot_rankings(songname):
     plt.show()
     return average_distance(results)
 
+def plot_distribution(day):
+    return None
+
+
 # endregion
 
 # region Plot All
@@ -373,14 +377,14 @@ def spotify_songs():
 
 # endregion
 
-print_all_songs()
-#print(len(spotify_songs()), spotify_songs())
-#plot_all_views(spotify_songs(), DIR_YT)
-plot_all_rankings(spotify_songs())
+# print_all_songs()
+# print(len(spotify_songs()), spotify_songs())
+# plot_all_views(spotify_songs(), DIR_YT)
+# plot_all_rankings(spotify_songs())
 
 #plot_all_views(SONGS_3FM, DIR_3FM)
 #plot_all_views(SONGS_538, DIR_538)
-#plot_all_views(SONGS_YT, DIR_YT)
+plot_all_views(SONGS_YT, DIR_YT)
 
 #plot_all_popularity(SONGS_YT)
 #plot_all_rankings(SONGS_YT)
