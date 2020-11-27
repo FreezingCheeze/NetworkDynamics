@@ -1,6 +1,7 @@
 from googleapiclient.discovery import build
 import random as rand
 import matplotlib.pyplot as plt
+import ast
 
 api_key_g = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
 api_key_b = 'AIzaSyCiv00E35N5wnqTNcp8CAXmkICSXraG0-w' # Bas' API key
@@ -28,8 +29,8 @@ def generate_data(v_id):
 
     get_video_data(v_id, res)
 
-    for i in range(90):
-        print(i)
+    for i in range(100):
+
         request = service.search().list( # Get the recommendations based on the previous looked up video
             part='snippet',
             relatedToVideoId=v_id,
@@ -46,24 +47,38 @@ def generate_data(v_id):
 
     return res
 
-# data = generate_data(video_id)
+
+#data = generate_data(video_id)
 # for item, value in data.items():
 #     print(item, value)
 
-sort = sorted([1,4,3,2],reverse=True)
-print(sort)
 
-def get_views(data):
-    views = [int(x) for (y, x) in data.values()]
+def read_data_from_file():
+    with open("YoutubeData.txt", encoding="utf8") as f:
+        content = f.read()
+        dictionary = ast.literal_eval(content)
+        f.close()
 
+    return dictionary
 
-def plot_views(songname, dir):
-    results = sorted(get_views)
-    plt.plot(results[0])
+def plot_data():
+    dictionary = read_data_from_file()
+    views = sorted([int(y) for (x, y) in dictionary.values()], reverse=True)
 
-    plt.xlabel('days')
-    plt.ylabel('views')
-    plt.title(songname)
+    plt.plot(views)
+
+    plt.xlabel('Number of Videos')
+    plt.ylabel('Views')
+    plt.title("Views of Videos")
     plt.show()
 
+def plot_normal_distribution():
+    dictionary = read_data_from_file()
+    views = [int(y) for (x, y) in dictionary.values()]
+    min = min(views)
+    max = max(views)
+    intervals = [x for x in range(min, max, (max-min) / 10)]
+    print(intervals)
 
+
+plot_normal_distribution()
