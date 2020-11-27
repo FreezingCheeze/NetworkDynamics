@@ -1,10 +1,12 @@
 from googleapiclient.discovery import build
 import random as rand
+import matplotlib.pyplot as plt
 
-api_key = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
+api_key_g = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
+api_key_b = 'AIzaSyCiv00E35N5wnqTNcp8CAXmkICSXraG0-w' # Bas' API key
 video_id = 'Vh_vi8qN4Cs'
 
-service = build('youtube', 'v3', developerKey=api_key)
+service = build('youtube', 'v3', developerKey=api_key_b)
 
 
 # Takes the video id of the video to get data from, as well as the dictionary to put the stats into
@@ -26,8 +28,8 @@ def generate_data(v_id):
 
     get_video_data(v_id, res)
 
-    for i in range(100):
-
+    for i in range(90):
+        print(i)
         request = service.search().list( # Get the recommendations based on the previous looked up video
             part='snippet',
             relatedToVideoId=v_id,
@@ -44,7 +46,24 @@ def generate_data(v_id):
 
     return res
 
-data = generate_data(video_id)
-for item, value in data.items():
-    print(item, value)
+# data = generate_data(video_id)
+# for item, value in data.items():
+#     print(item, value)
+
+sort = sorted([1,4,3,2],reverse=True)
+print(sort)
+
+def get_views(data):
+    views = [int(x) for (y, x) in data.values()]
+
+
+def plot_views(songname, dir):
+    results = sorted(get_views)
+    plt.plot(results[0])
+
+    plt.xlabel('days')
+    plt.ylabel('views')
+    plt.title(songname)
+    plt.show()
+
 
