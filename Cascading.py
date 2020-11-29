@@ -82,7 +82,8 @@ def get_statistics(songname, dir, *args):
         raise ValueError("Don't use the Spotify dataset with this function")
 
     # Temp will be a list of len(arg)-tuples,
-    # where each tuple will contain the values requested in args at that time point in the data set
+    # where each tuple will contain the values requested in args of the requested song,
+    # at all time points in the data set
     # Examples of args are: likeCount, dislikeCount, viewCount
     temp = []
     for num, filename in enumerate(os.listdir(dir), start=1):
@@ -100,7 +101,6 @@ def get_statistics(songname, dir, *args):
             temp.append(res)
 
     return tuples_to_list(temp)
-
 
 def get_differences(songname, dir):
     # Get the lists of likes and dislikes for the given song in the given directory/dataset
@@ -254,6 +254,18 @@ def plot_rankings(songname):
     plt.show()
     return average_distance(results)
 
+
+def plot_view_distribution(filename):
+    data = rank_youtube(filename)
+    views = sorted([int(y) for (x, y) in data], reverse=True)
+    plt.plot(views)
+
+    plt.xlabel('Number of Videos')
+    plt.ylabel('Views')
+    plt.title(filename)
+    plt.show()
+
+
 # endregion
 
 # region Plot All
@@ -276,9 +288,12 @@ def plot_all_popularity(songs):
 def plot_all_rankings(songs):
     total_distance = 0
     for song in songs:
-        total_distance += plot_rankings(song)
+        song_average = plot_rankings(song)
+        total_distance += song_average
+        print(song, "Average Distance:", song_average)
     average = total_distance / len(songs)
-    print(average)
+    print("Average Distance over songs:", average)
+
 
 def plot_all(songs):
     for song in songs:
@@ -286,6 +301,11 @@ def plot_all(songs):
         plot_views(song, DIR_YT)
         plot_popularity(song)
         plot_rankings(song)
+
+
+def plot_all_view_distributions():
+    for file in os.listdir(DIR_YT):
+        plot_view_distribution(file)
 
 
 # endregion
@@ -373,10 +393,10 @@ def spotify_songs():
 
 # endregion
 
-print_all_songs()
-#print(len(spotify_songs()), spotify_songs())
-#plot_all_views(spotify_songs(), DIR_YT)
-plot_all_rankings(spotify_songs())
+# print_all_songs()
+# print(len(spotify_songs()), spotify_songs())
+# plot_all_views(spotify_songs(), DIR_YT)
+# plot_all_rankings(spotify_songs())
 
 #plot_all_views(SONGS_3FM, DIR_3FM)
 #plot_all_views(SONGS_538, DIR_538)
@@ -384,3 +404,7 @@ plot_all_rankings(spotify_songs())
 
 #plot_all_popularity(SONGS_YT)
 #plot_all_rankings(SONGS_YT)
+plot_all_rankings(SONGS_YT)
+
+#plot_view_distribution(DATA)
+
