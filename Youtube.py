@@ -1,3 +1,6 @@
+# Bas Kool 			-	s2176386
+# Gies den Broeder 	-	s2161168
+
 from googleapiclient.discovery import build
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,11 +10,13 @@ import ast
 
 gies_key = 'AIzaSyDGbY8PRfEKNJRoQci4Pjx5id-0I5lm5SA' # Gies' API key
 bas_key = 'AIzaSyCiv00E35N5wnqTNcp8CAXmkICSXraG0-w' # Bas' API key
+
+# Different start video's, the data in the report is from the first one
 video_id = 'Vh_vi8qN4Cs'
 video_id2 = 'c0SrxSMHDmE'
 video_id3 = '9sTQ0QdkN3Q'
 
-service = build('youtube', 'v3', developerKey=bas_key)
+service = build('youtube', 'v3', developerKey=gies_key)
 
 
 # Takes the video id of the video to get data from, as well as the dictionary to put the stats into
@@ -52,6 +57,8 @@ def generate_data(v_id):
     return res
 
 
+# Reads the data that was collected from the file
+# Data is a dictionary of song id to a tuple of (name, views), for 100 songs
 def read_data_from_file(filename):
     with open(filename, encoding="utf8") as f:
         content = f.read()
@@ -61,6 +68,7 @@ def read_data_from_file(filename):
     return sorted([int(y) for (x, y) in dictionary.values()], reverse=True)
 
 
+# Plots the given views, with the given title
 def plot_data(views, title):
     plt.plot(views)
 
@@ -70,6 +78,7 @@ def plot_data(views, title):
     plt.show()
 
 
+# Tries to plot a normal distribution curve for the given views
 def plot_normal_distribution(views, title):
     view_mean = np.mean(views) # Mean
     view_std = np.std(views) # Standard Deviation
@@ -80,6 +89,7 @@ def plot_normal_distribution(views, title):
     plt.show()
 
 
+# Gathers the data from all data files and compiles them into 1 list
 def gather_data(files):
     all_views = []
     for file in files:
@@ -89,7 +99,7 @@ def gather_data(files):
     return sorted(all_views, reverse=True)
 
 
-# The data here was copied from internet, so I knew it would yield a nice graph
+# The data here was copied from internet, so we knew it would yield a nice graph
 def plot_actual_normal_distrbution():
     data = sorted([186, 176, 158, 180, 186, 168, 168, 164, 178, 170, 189, 195, 172,
      187, 180, 186, 185, 168, 179, 178, 183, 179, 170, 175, 186, 159,
@@ -102,6 +112,7 @@ def plot_actual_normal_distrbution():
     plt.show()
 
 
+# Generated data files
 Data1 = 'Data1.txt'
 Data2 = 'Data2.txt'
 Data3 = 'Data3.txt'
@@ -114,19 +125,19 @@ FILES = [Data1
         ]
 
 
+# Plots the data for all files, including the compilation of all data into 1 list
 def plot_all_data():
     for data in FILES:
         plot_data(read_data_from_file(data), data)
     plot_data(gather_data(FILES), 'All Files')
 
-
+# Plots the normal distributions for all files, including the compilation of all data into 1 list
 def plot_all_normal_distributions():
     for data in FILES:
         plot_normal_distribution(read_data_from_file(data), data)
     plot_normal_distribution(gather_data(FILES), 'All files')
 
 
-# plot_data(generate_data(video_id3))
 plot_all_data()
 plot_all_normal_distributions()
 plot_actual_normal_distrbution()

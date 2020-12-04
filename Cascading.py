@@ -1,3 +1,6 @@
+# Bas Kool 			-	s2176386
+# Gies den Broeder 	-	s2161168
+
 import json
 import os
 import matplotlib.pyplot as plt
@@ -35,34 +38,7 @@ def load_json(filename):
     with open(filename) as json_file: return json.load(json_file)
 
 
-def print_all_songs():
-    # overview of all songs from the 4 datasets
-    # print("Youtube's Top 100 Songs:")
-    # dummy_file = load_json("youtube_top100/20151109_1800_data.json")
-    # for song in dummy_file:
-    #     print(song['snippet']['title'])
-    # print()
-
-    print("Spotify's Top 100 Songs:")
-    dummy_file = load_json("spotify_top100/20151109_1800_data.json")
-    print(len(dummy_file['tracks']['items']))
-    for song in dummy_file['tracks']['items']:
-        print(song['track']['name'])
-    print()
-
-    # print("Radio 3FM megahit's songs")
-    # dummy_file = load_json("radio3fm_megahit/20161028_1800_data.json")
-    # for song in dummy_file:
-    #     print(song['snippet']['title'])
-    # print()
-    #
-    # print("Radio 538 alarmschijf's songs")
-    # dummy_file = load_json("radio538_alarmschijf/20161028_1800_data.json")
-    # for song in dummy_file:
-    #     print(song['snippet']['title'])
-    # print()
-
-
+# Converts a list of tuples to a list of len(tuple) lists containing the values of the tuples
 def tuples_to_list(tuples):
     result = []
     for i in range(len(tuples[0])):
@@ -77,6 +53,7 @@ def tuples_to_list(tuples):
 
 # region Stats
 
+# Returns a list of len(arg)-lists containing the values for the given statistics(args) for the given song from the given dataset
 def get_statistics(songname, dir, *args):
     if dir == DIR_SPOT:
         raise ValueError("Don't use the Spotify dataset with this function")
@@ -101,6 +78,7 @@ def get_statistics(songname, dir, *args):
             temp.append(res)
 
     return tuples_to_list(temp)
+
 
 def get_differences(songname, dir):
     # Get the lists of likes and dislikes for the given song in the given directory/dataset
@@ -157,6 +135,7 @@ def rank_youtube(filename):
     return sorted(res.items(), key=lambda x: x[1], reverse=True)
 
 
+# Produces a list of 2 lists, containing the rankings over time for youtube views, and popularity on spotify
 def song_rankings(song):
     res = []
     for filename in os.listdir(DIR_SPOT):
@@ -204,7 +183,7 @@ def average_distance(rankings):
 
 # region Plots
 
-# This function was copied from last weeks files
+# Plots the differences (likes, dislikes and difference between them), for the given song, in the given directory over time
 def plot_differences(songname, dir):
     '''
     Plots a graph with the days throughout a year on the x-axis and (dis)like count on the y-axis
@@ -222,6 +201,7 @@ def plot_differences(songname, dir):
     return None
 
 
+# Plots the views for the given song, in the given directory over time
 def plot_views(songname, dir):
     results = get_statistics(songname, dir, viewCount)
     plt.plot(results[0])
@@ -232,6 +212,7 @@ def plot_views(songname, dir):
     plt.show()
 
 
+# Plots the popularity of the given song in the spotify dataset
 def plot_popularity(songname):
     results = get_popularity(songname)
     plt.plot(results)
@@ -242,6 +223,7 @@ def plot_popularity(songname):
     plt.show()
 
 
+# Plots the rankings in the spotify and youtube dataset over time, for the given song
 def plot_rankings(songname):
     results = song_rankings(songname)
 
@@ -255,6 +237,7 @@ def plot_rankings(songname):
     return average_distance(results)
 
 
+# Plots the views of the songs on a given day in the youtube dataset, sorted from high to low
 def plot_view_distribution(filename):
     data = rank_youtube(filename)
     views = sorted([int(y) for (x, y) in data], reverse=True)
@@ -270,21 +253,25 @@ def plot_view_distribution(filename):
 
 # region Plot All
 
+# Plots the differences of all songs in the given list of songs, from the given directory
 def plot_all_differences(songs, dir):
     for song in songs:
         plot_differences(song, dir)
 
 
+# Plots the views of all songs in the given list of songs, from the given directory
 def plot_all_views(songs, dir):
     for song in songs:
         plot_views(song, dir)
 
 
+# Plots the popularity of all songs in the given list of songs over time from the spotify dataset
 def plot_all_popularity(songs):
     for song in songs:
         plot_popularity(song)
 
 
+# Plots the rankings on youtube and spotify, of all songs in the given list of songs, over time
 def plot_all_rankings(songs):
     total_distance = 0
     for song in songs:
@@ -295,6 +282,7 @@ def plot_all_rankings(songs):
     print("Average Distance over songs:", average)
 
 
+# Calls all plot_all functions on the given list of (youtube/spotify) songs
 def plot_all(songs):
     for song in songs:
         plot_differences(song, DIR_YT)
@@ -303,6 +291,7 @@ def plot_all(songs):
         plot_rankings(song)
 
 
+# Plot the view distribution for all files in the youtube dataset
 def plot_all_view_distributions():
     for file in os.listdir(DIR_YT):
         plot_view_distribution(file)
@@ -312,15 +301,17 @@ def plot_all_view_distributions():
 
 # region Songs
 
+# Songs in 3FM dataset
 SONGS_3FM = ['Bastille - Send Them Off!']
 
+# Songs in 538 dataset
 SONGS_538 = [
     'Fais & Afrojack - Used To Have It All (Official Video)'
     , "DIT IS 4U MET 'BITTER TASTE' – The Next Boy/Girl Band"
     , 'Kensington - Sorry (official audio)'
             ]
 
-# These songs are for Youtube and Spotify
+# Smaller set of songs for youtube and spotify to be able to quickly see some plots
 SONGS_YT = [
     'Hello'
     , 'Good For You'
@@ -334,6 +325,11 @@ SONGS_YT = [
     , 'Same Old Love'
          ]
 
+
+# These songs should not be used, because
+# The song name is also found in another song name, or
+# it is entirely not in 1 of the 2 datasets, or
+# theres only like 50 days of data, which is not a lot
 DONT_USE = [
     'Where Are Ü Now (with Justin Bieber)'
     , 'Easy Love - Original Mix'
@@ -371,9 +367,11 @@ DONT_USE = [
     , 'Love Me Like You'
     , '7 Years'
     , 'Love Me Like You Do - From "Fifty Shades Of Grey"'
+    , 'Shut up and Dance'
         ]
 
 
+# Returns a list of all spotify songs, excluding the ones that should not be used
 def spotify_songs():
     res = []
     for item in load_json(DIR_SPOT + SLASH + DATA)[tracks][items]:
@@ -393,18 +391,21 @@ def spotify_songs():
 
 # endregion
 
-# print_all_songs()
-# print(len(spotify_songs()), spotify_songs())
-# plot_all_views(spotify_songs(), DIR_YT)
-# plot_all_rankings(spotify_songs())
 
-#plot_all_views(SONGS_3FM, DIR_3FM)
-#plot_all_views(SONGS_538, DIR_538)
-#plot_all_views(SONGS_YT, DIR_YT)
+plot_all_differences(SONGS_3FM, DIR_3FM)
+plot_all_differences(SONGS_538, DIR_538)
 
-#plot_all_popularity(SONGS_YT)
-#plot_all_rankings(SONGS_YT)
+#plot_all_differences(spotify_songs(), DIR_YT)
+#plot_all_views(spotify_songs(), DIR_YT)
+#plot_all_popularity(spotify_songs())
+#plot_all_rankings(spotify_songs())
+
+plot_all_differences(SONGS_YT, DIR_YT)
+plot_all_views(SONGS_YT, DIR_YT)
+plot_all_popularity(SONGS_YT)
 plot_all_rankings(SONGS_YT)
 
-#plot_view_distribution(DATA)
+plot_all_view_distributions()
+
+
 
